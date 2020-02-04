@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Form from './Form';
-import Image from './Image';
+import React, { useState } from 'react'
+import axios from 'axios'
+import Form from './Form'
+import Image from './Image'
+import { API_KEY } from '../auth'
 
-function App() {
+export default function App() {
   const [queryData, setData] = useState(null)
   const [showForm, setShowForm] = useState(true)
+
   async function loadData(searchValue) {
     try {
       const requestConfig = {
@@ -14,7 +16,7 @@ function App() {
         params: {
           q: searchValue,
           limit: 20,
-          api_key: 'C0l1758WeHyEa6niR8hdE7uUpVqQhJrx'
+          api_key: API_KEY,
         },
         type: 'application/json',
       }
@@ -22,24 +24,12 @@ function App() {
       setData(searchResult.data.data)
       setShowForm(false)
     } catch (err) {
-      console.log(err)
+      alert(err)
     }
   }
-  function onSearchSubmit(searchValue) {
-    loadData(searchValue)
-  }
-  if(showForm) {
-    return (
-      <Form onSearchSubmit={onSearchSubmit} />
-    )
-  }
-  else {
-    return (
-      <div>
-        <Image src={queryData} />
-      </div>
-    )
 
+  if (showForm) {
+    return <Form onSearchSubmit={loadData} />
+  } else {
+    return <Image src={queryData} />
   }}
-
-export default App;
