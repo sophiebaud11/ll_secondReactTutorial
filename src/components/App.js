@@ -9,6 +9,10 @@ export default function App() {
   const [showForm, setShowForm] = useState(true)
 
   async function loadData(searchValue) {
+    if (!searchValue) {
+      alert("enter a search value!")
+      return
+    }
     try {
       const requestConfig = {
         method: 'get',
