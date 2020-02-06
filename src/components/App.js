@@ -35,5 +35,5 @@ export default function App() {
   if (showForm) {
     return <Form onSearchSubmit={loadData} />
   } else {
-    return <Image src={queryData} />
+    return <Image src={queryData} refresh={setShowForm} />
   }}
