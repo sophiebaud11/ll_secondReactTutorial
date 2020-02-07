@@ -7,6 +7,10 @@ export const labelStyle = {
   marginBottom: '10px',
   textShadow: '2px 2px #4d194d'
 }
+export const rowStyle = {
+  display: 'flex',
+  justifyContent: "center",
+}
 export const formStyle = {
   display: 'block',
   width: '200px',

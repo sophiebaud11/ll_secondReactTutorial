@@ -101,10 +101,143 @@ Now that we know a bit about APIs, let's think about how exactly to make an API 
 
 First, we need a bunch of parameters in order to let the API know what exactly we need from it. If you go to the documentation for GIPHY's API, and look under the [Search Endpoint](https://developers.giphy.com/docs/api/endpoint#endpoint) section, you can see some of the parameters we can edit in our request. In this case, we'll be filling out the following GIPHY parameters: `q`, `limit`, and `api_key`, to specify to GIPHY's API the query we wants GIFs for, number of GIFs we want, and our API key, respectively. We'll also specify a few `axios` parameters: `method`, `url`, and `type`. `Method` outlines what kind of HTTP request we'll be making—in this case, we're going to make a GET request, which essentially fetches data without sending anything back. The `url` is given to us by GIPHY's API documentation, and gives us access to the feature that searches their GIFs. Finally, the `type` specifies what form we want our data to be in when we get it—here, we want it to be in json form, so we can easily access different parts of the data we get from GIPHY (ex. a GIF's name, url, its size, and so on).
 
-All of this information lives in a Javascript object that we give to `axios` so that it can properly process this API call.
+All of this information will live in a Javascript object that we need to give to `axios`, so that it can properly process this API call. We need to wrap this object in a function, though, so that we can actually send it where it needs to go at the right times.
+
+This calls for an `async` function. `async` functions operate a bit differently from other functions—they are asynchronous, which means they happen in a different order than synchronous functions. They also have an `await` property, which will pause the function until a certain `Promise` is resolved. That resolution occurs when a `Promise` (which represents the result (successful or otherwise) of an asynchronous function) returns a value that indicates its operation is complete.
+
+Without thinking about logic yet, let's see what this syntax might look like:
+
+```
+export default function App() {
+  const[showForm, setShowForm] = useState(true)
+
+  async function loadData() {
+    const requestConfig = {
+      {
+        method: 'get',
+        url: 'http://api.giphy.com/v1/gifs/search',
+        params: {
+          q: 'cat',
+          limit: 20,
+          api_key: API_KEY,
+        },
+        type: 'application/json',
+      }
+      const searchResult = await axios(requestConfig)
+    }
+  }
+  if (showForm) {
+    return <Form />
+  } else {
+    return <Image />
+  }
+}
+```
+Note what our `requestConfig` object looks like, and how it structures all of the data we need to send to `axios`. The general things the API call needs are directly positioned within the object, and then the parameters that are specific to GIPHY's API are placed within a `params`.
+
+Now that we've got some of the basic API call syntax out of the way, let's think about the logic of what we're trying to do here. As you can see in our `requestConfig` object, which lays out how we're going about our API call, we're using some kind of a search query (in this case, hardcoded as 'cat' before we get our form up and running) to shift through all of the GIPHY GIFs and pick out 20 that match that search value. Then, we get a ton of JSON data—and now we have to figure out what to do with it.
+
+The data we get from this API call is going to change every time the user makes a search. Luckily, we're using React, so we can handle this super easily by making our GIF data into a state variable. Once it's established as a state variable, we can update it with new data every time a search is made, and pass that data down to the child component Image to effectively render our GIF.
+
+Let's put that in App.js, before our `async` function:
+
+```
+export default function App() {
+  const[queryData, setData] = useState(null)
+  const[showForm, setShowForm] = useState(true)
+
+  async function loadData() {
+    try{
+      const requestConfig = {
+      {
+        method: 'get',
+        url: 'http://api.giphy.com/v1/gifs/search',
+        params: {
+          q: 'cat',
+          limit: 20,
+          api_key: API_KEY,
+        },
+        type: 'application/json',
+      }
+      const searchResult = await axios(requestConfig)
+      setData(searchResult)
+      setShowForm(false)
+    }
+    } catch (err) {
+      alert(err)
+    }
+  }
+  if (showForm) {
+    return <Form />
+  } else {
+    return <Image />
+  }
+}
+```
+You may be noticing a bunch of changes here, so let's talk them through. First, we've defined our `queryData` state, which is set as null initially and then updated after we carry out our API call with `await axios(requestConfig)`.  After that, we also have to update our `showForm` state, because now we want to move on from showing the form where the user can input their search value to showing the GIF we're getting from the API call instead.
+
+Additionally, we've wrapped the entire API call in a `try{} catch{}` block, which will essentially make sure that if anything goes wrong in our API call, an error will be thrown out to let us know.
+
+At this point, we're missing a couple pieces: one, we're missing the Form & its input, which is important because we'll want to call this `loadData()` function when the form is submitted, as well as use the input from that submission as our search value in the `q` parameter of our API call. Two, we're missing the code to render our image with the data we get from `loadData`'s API call.
+
+First, let's take the form!
 
 ## Creating the Form
 // make style file and import that into the different child components
+
+To start, let's review exactly what we need to happen in `Form.js`. `Form.js` is the child component of `App.js`, so we have to pass it a function that will trigger `loadData()` every time the form is submitted. We also need to include the search value in that function call, so that `App.js` has all the information it needs to run the API call we want.
+
+The best way to structure this visually is to have a simple text input box with a submit button. In the input box, we want to update the search value as the user types, and in the submit button, we want to trigger the `loadData()` function every time the user presses submit. Let's start with the input box!
+
+Inside of our existing `Form.js` function `Form()` let's add a few things: first, some divs laying out our input box and input box label. Second, we'll need to add an `onChange` property that triggers `loadData`!
+
+But wait—we have a few problems before we can start. For one, we don't have a state variable to keep track of the user-inputted search value yet. Because the user is updating this `searchValue` every time they type something into our form, so we want to make sure we're updating that value in such a way that `App.js` can keep track of it. Hence, a state variable! We'll add that right into the `Form()` function.
+
+For another thing, we don't currently have `loadData()` passed into our Form component. To do so, we'll pass `loadData()` as a prop from App to Form! If the word 'prop' doesn't sound particularly familiar to you, review the concept [here](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#props).
+
+First, go into `App.js`, and add `loadData()` as a prop where we're returning Form:
+```
+if (showForm) {
+  return <Form onSearchSubmit={loadData} />
+} else {
+  return <Image />
+}
+```
+Now, go into Form.js, and let's put all this (input box JSX, `onChange` function) together!
+```
+import React, { useState } from 'react'
+import { Row, Col } from 'shards-react'
+import { rowStyle, formStyle, labelStyle, formButtonStyle } from './style'
+
+export default function Form({ onSearchSubmit }) {
+  const [searchValue, setSearch] = useState(null)
+  return (
+    <Col style={{marginTop: "20%"}}>
+      <Row style={rowStyle}>
+        <div style={labelStyle}>
+          Search a GIF:
+        </div>
+      </Row>
+      <Row style={rowStyle}>
+        <input type="text" style={formStyle} onChange={e => setSearch(e.target.value)}/>
+      </Row>
+      <Row style={rowStyle}>
+        <button style={formButtonStyle} onClick={() => onSearchSubmit(searchValue)}>Submit!</button>
+      </Row>
+    </Col>
+  )
+}
+
+```
+Note that we've also added a few more lines to our imports at the top of the file—this is just to take care of styling for the form. See how we're passing `onSearchSubmit` into the `Form()` function as a parameter, so we can access it in our form. Also, take a look at the different functions associated with each part of our form. The input box has the `onChange` feature, which updates the `searchValue` state with every letter the user types! The `e` within `onChange` is the variable where we're storing our event object, which in this case is the user typing in the form. If this doesn't make sense, feel free to look at the JS event object documentation [here](https://developer.mozilla.org/en-US/docs/Web/API/Event)]!
+
+The submit button, on the other hand, has an `onClick` function that triggers `onSearchSubmit`—which, if you remember, is the name for the prop that holds `loadData()`! Within `onSearchSubmit`, we're also passing the `searchValue` state, so that `App.js` knows our user's inputted search value. This isn't currently updated in App.js (remember, we hardcoded 'cat' for our `q` parameter in the API), so let's add `searchValue` there!
+
+```
+
+```
+
+
 ## Creating the Image
 
 ## Challenge! (Refresh & Shuffle Buttons)
