@@ -234,10 +234,92 @@ Note that we've also added a few more lines to our imports at the top of the fil
 The submit button, on the other hand, has an `onClick` function that triggers `onSearchSubmit`—which, if you remember, is the name for the prop that holds `loadData()`! Within `onSearchSubmit`, we're also passing the `searchValue` state, so that `App.js` knows our user's inputted search value. This isn't currently updated in App.js (remember, we hardcoded 'cat' for our `q` parameter in the API), so let's add `searchValue` there!
 
 ```
+async function loadData(searchValue) {
+  if (!searchValue) {
+    alert("enter a search value!")
+    return
+  }
+  try {
+    const requestConfig = {
+      method: 'get',
+      url: 'http://api.giphy.com/v1/gifs/search',
+      params: {
+        q: searchValue,
+        limit: 20,
+        api_key: API_KEY,
+      },
+      type: 'application/json',
+    }
+    const searchResult = await axios(requestConfig)
+    setData(searchResult.data.data)
+    setShowForm(false)
+  } catch (err) {
+    alert(err)
+  }
+}
 
 ```
+Now, your Form component should be working. It should be the first thing you see when you load the page, and it it should App.js should be able to read the `searchValue` you enter. Feel free to add a `console.log(searchValue)` at key points in the code to see how it's working!
 
+With our Form completed, it's time to move on to creating our Image component.
 
 ## Creating the Image
 
+Currently, all we have in Image.js is a `div` containing some text. We're going to change that now, to render instead the GIF gathered from the API call initiated by Form and App. In order to do so, we'll need something important from App: our GIF data.
+
+Log out the `queryData` state to the console and run the form with a search value. What does this data from the API call look like? How are we going to render the GIF from that data?
+
+We'll be using the HTML `iframe` tag to display our GIF. The important part of `iframe` we'll be editing is its `src` tag, which we'll fill with the url of the GIF summoned by our API call. Look at the `queryData` log, and let's think about how to grab this url from `queryData`!
+
+Within the `queryData` JSON object, we have a lot of information, but only one piece of it is going to be necessary for rendering the GIF: `embed_url`. This key, as you might be able to guess, contains the GIF's url that can be embedded in an HTML tag, so that's what we want to be including in our `iframe` tag in Image.js! Let's make that happen.
+
+First, at the bottom of App.js, we need to send `queryData` to Image.js so we can access its content there:
+
+```
+if (showForm) {
+  return <Form onSearchSubmit={loadData} />
+} else {
+  return <Image src={queryData} />
+}}
+
+```
+
+Now that we're passing Image.js `queryData` in the prop `src`, let's add that to the parameters of the `Image` function.  Once that's done, we can take care of making the GIF appear as per the logic of  `src`'s data:
+
+```
+import React, {useState} from 'react'
+import { Row, Col } from 'shards-react'
+import { gifStyle, imgButtonStyle } from './style'
+
+export default function Image({ src }) {
+  console.log(src)
+
+  if (!src) {
+    console.log("no gif url")
+  } else {
+      return (
+        <>
+        <Col style={{marginTop: "20%"}}>
+          <Row style={rowStyle}>
+            <iframe style={gifStyle} src={src[0].embed_url} title={src[0].title} width={src[0].images.original.width} />
+          </Row>
+        </Col>
+        </>
+      )
+    }
+}
+
+```
+There's a lot to notice here. For one thing, like we did in Form.js, there's a lot of styling happening that you don't need to worry about—we've taken care of it in style.js, which you can check out if you're interested! The more important thing to pay attention to is what we're including in `iframe`. For our `src` attribute, we're calling the `embed_url` property of the `[0]` index of our `src` prop (which means the very first object in src—AKA our first GIF). We're also defining the `title` attribute in the same way, by accessing the `title` property of the first index of our `src` prop. Finally, we're settting the `width` of the `iframe` to be the width of our GIF, which is nested in a few layers of the `src` prop: within `image`, then `original`, Then `width.`
+
+With all of this finished up, you should have a working app now! Save your code and refresh the your `localhost:3000` page, and enjoy all of the wonderful GIF summoning functionality you've built.
+
 ## Challenge! (Refresh & Shuffle Buttons)
+
+If this walkthrough wasn't tricky enough for you, have no fear—we have an additional challenge you can take on!
+
+Let's say you, the user, wants a little more from this app than we're currently delivering. Specifically, you want to add two buttons: a button that will send you back to the form page without needing to refresh everything on your own, so you can enter a new search term; and a button that will allow you to shuffle through all of the GIFs you've gathered in the API call for one search term. (Check out the parameters of the call: we've limited the number of  GIFs we're calling data for to 20, so you have the data for rendering all of these GIFs!) This way, if you don't love the GIF you got from your initial search, you can keep moving down the index of `queryData` until you get one you like (out of the 20 we've called).
+
+Here are a few hints for tackling this challenge: one, for the refresh or back button, think about what things you've already created in your code that dictate what you display on the user's end, and figure out if you can use any of that code to send the page back to the initial form. For a hint on creating the shuffle button, you'll need to make some kind of a counter that keeps track of what GIF (AKA what index) you're currently displaying among the 20 you have data for.
+
+Good luck!
