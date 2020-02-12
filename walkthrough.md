@@ -26,7 +26,6 @@ Remember: to get this code up and running, install npm if needed, and enter `npm
 ```
 import App from './starter/App'
 ```
-
 In the Starter folder, you should see three files under Components: `App.js`, `Form.js`, and `Image.js`. App is our parent component, and Form & Image are its children, where (you guessed it!) the code making the form for users to input their GIF search term & the code rendering our GIF will live. Our API call is going to live in App, so that we can pass all that information down to Form & Image. Let's set up App.js now. We need to import a bunch of things to get our program started (right now we'll import React and our child components, but we'll add to this as we go along!).
 
 We also need to return something at the end of our main function. At any given time, we'll either be rendering a form in which the user can submit a search term, or a GIF found using that search. This is why we have both a Form and Image component, so that we can alternate between returning each depending on what the user has just done.
