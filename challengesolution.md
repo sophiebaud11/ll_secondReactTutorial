@@ -15,11 +15,11 @@ In this challenge, you'll make two buttons: a refresh button, which sends the us
 What we mean by a 'refresh' (or 'back') button is one that sends you back to the Form page. Luckily for us, we control the display of the Form page using a state variable in App, which we can easily pass down to Image.js (where our button will live!).
 
 :collision: First, let's make this button in Image.js, right above our GIF:
-```
-<Col style={{marginTop: "20%"}}>
-  <Row style={{display: 'flex', justifyContent: "center"}}>
-    <button style={imgButtonStyle}}>Back</button>
-  </Row>
+```diff
+ <Col style={{marginTop: "20%"}}>
++  <Row style={{display: 'flex', justifyContent: "center"}}>
++    <button style={imgButtonStyle}}>Back</button>
++  </Row>
   <Row style={{display: 'flex', justifyContent: "center"}}>
     <iframe style={gifStyle} src={src[counterValue].embed_url} title={src[counterValue].title} width={src[counterValue].images.original.width} />
   </Row>
@@ -101,7 +101,7 @@ Hopefully this is ringing a bell: our counter value needs to be a state variable
 Our `onClick()` function is currently triggering nothing, but we're going to fix that once we write the function that will increment our counter.
 
 :collision: First, though, let's create a counter state, initialized at 0, at the beginning of the function `Image()`:
-```
+```js
 const [counterValue, setCounter] = useState(0)
 ```
 
@@ -114,7 +114,7 @@ Before we write any code, let's think about the logic of this function. What do 
 It should check the value of the counter state variable, and if it's less than 19, increment it by 1. If it is equal to 19, we want to send it back to the first index (0), because that means we've shuffled through all of our available GIFs, so we have to start from the beginning again! Think about what that should look like in terms of Javascript's function syntax.
 
 :collision: Once you've finished writing it, it should look like this:
-```
+```js
 function incrementCounter(setCounter, counterValue) {
   if (counterValue === 19) {
     setCounter(0)
