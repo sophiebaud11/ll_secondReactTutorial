@@ -31,7 +31,7 @@ Buttons have an `onClick` property (hopefully that sounds familiar from the last
 In order to do so, we need to pass the `setShowForm` state variable down to Form as a prop. If you remember, there's two things we'll have to edit to do this: one, Image's return statement in App, and two, the parameters of the main function of the Image component.
 
 :collision: After doing so, the return statement of App.js and main function of Image.js should look like this (respectively):
-```
+```diff
 if (showForm) {
   return <Form onSearchSubmit={loadData} />
 } else {
