@@ -35,7 +35,7 @@ In order to do so, we need to pass the `setShowForm` state variable down to Form
 if (showForm) {
   return <Form onSearchSubmit={loadData} />
 } else {
-  return <Image src={queryData} refresh={setShowForm} />
++  return <Image src={queryData} refresh={setShowForm} />
 }}
 
 ```
