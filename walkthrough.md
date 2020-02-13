@@ -108,25 +108,25 @@ This calls for an `async` function. `async` functions operate in a unique way: t
 
 :collision: Let's see what this syntax will look like in App.js's main function:
 
-```js
+```diff
 export default function App() {
   const[showForm, setShowForm] = useState(true)
 
-  async function loadData() {
-    const requestConfig = {
-      {
-        method: 'get',
-        url: 'http://api.giphy.com/v1/gifs/search',
-        params: {
-          q: 'cat',
-          limit: 20,
-          api_key: API_KEY,
-        },
-        type: 'application/json',
-      }
-      const searchResult = await axios(requestConfig)
-    }
-  }
++  async function loadData() {
++    const requestConfig = {
++      {
++        method: 'get',
++        url: 'http://api.giphy.com/v1/gifs/search',
++        params: {
++          q: 'cat',
++          limit: 20,
++          api_key: API_KEY,
++        },
++        type: 'application/json',
++      }
++      const searchResult = await axios(requestConfig)
++    }
++  }
   if (showForm) {
     return <Form />
   } else {
@@ -142,13 +142,13 @@ The data we get from this API call is going to change every time the user makes 
 
 :collision: Let's put that in App.js, before our `async` function:
 
-```js
+```diff
 export default function App() {
-  const[queryData, setData] = useState(null)
+_  const[queryData, setData] = useState(null)
   const[showForm, setShowForm] = useState(true)
 
   async function loadData() {
-    try{
++    try{
       const requestConfig = {
         method: 'get',
         url: 'http://api.giphy.com/v1/gifs/search',
@@ -160,11 +160,11 @@ export default function App() {
         type: 'application/json',
       }
       const searchResult = await axios(requestConfig)
-      setData(searchResult.data.data)
-      setShowForm(false)
-    } catch (err) {
-      alert(err)
-    }
++      setData(searchResult.data.data)
++      setShowForm(false)
++    } catch (err) {
++      alert(err)
++    }
   }
   if (showForm) {
     return <Form />
@@ -196,9 +196,9 @@ But wait—we have a few problems before we can start. For one, we don't have a 
 For another thing, `loadData()` isn't in our Form component yet for us to call in the submit button. To be able to call `loadData()`, we'll pass it as a prop from App.js to Form.js! If the word 'prop' doesn't sound particularly familiar to you, review the concept [here](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#props).
 
 :collision: First, go into App.js, and add `loadData()` as a prop where we're returning Form:
-```js
+```diff
 if (showForm) {
-  return <Form onSearchSubmit={loadData} />
++  return <Form onSearchSubmit={loadData} />
 } else {
   return <Image />
 }
@@ -237,18 +237,18 @@ In the submit button, when we call the `onSearchSubmit` function, we're also pas
 
 :collision: This isn't currently updated in App.js (remember, we hardcoded 'cat' for our `q` parameter in the API), so let's add `searchValue` in the parameters for `loadData()`, as well as in our `q` parameter in our API call, as well as add an `if` statement that handles the situation where there is, for some reason, no `searchValue`.
 
-```js
-async function loadData(searchValue) {
-  if (!searchValue) {
-    alert("enter a search value!")
-    return
-  }
+```diff
++ async function loadData(searchValue) {
++  if (!searchValue) {
++    alert("enter a search value!")
++    return
++  }
   try {
     const requestConfig = {
       method: 'get',
       url: 'http://api.giphy.com/v1/gifs/search',
       params: {
-        q: searchValue,
+  +      q: searchValue,
         limit: 20,
         api_key: API_KEY,
       },
@@ -274,21 +274,21 @@ Currently, all we have in Image.js is a `div` containing some text. We're going 
 We'll be using the HTML `iframe` tag to display our GIF. The important part of `iframe` we'll be editing is its `src` tag, which we'll fill with the url of the GIF summoned by our API call. Look at the `queryData` log, and let's think about how to grab this url from `queryData`!
 
 :collision: First, at the bottom of App.js, we need to send `queryData` to Image.js so we can access its content there:
-```js
+```diff
 if (showForm) {
   return <Form onSearchSubmit={loadData} />
 } else {
-  return <Image src={queryData} />
++  return <Image src={queryData} />
 }}
 
 ```
 :collision: Now that we're passing Image.js `queryData` in the prop `src`, let's add that to the parameters of the `Image` function and return it on our page so we can see what the data looks like.
 
-```js
+```diff
 export default function Image({ src }) {
   return (
     <div>
-      <h1>{JSON.stringify(src)}</h1>
++      <h1>{JSON.stringify(src)}</h1>
     </div>
     )
   }
