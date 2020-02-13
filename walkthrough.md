@@ -23,7 +23,7 @@ Remember: to get this code up and running, install npm if needed, and enter `npm
 
 ## Set-up
 :collision: Go to index.js, and edit one the headers to import the Starter App instead of the Example. Your code will break, but don't worry! We'll fix that soon.
-```
+```js
 import App from './starter/App'
 ```
 In the Starter folder, you should see three files under Components: `App.js`, `Form.js`, and `Image.js`. App is our parent component, and Form & Image are its children, where (you guessed it!) the code making the form for users to input their GIF search term & the code rendering our GIF will live. Our API call is going to live in App, so that we can pass all that information down to Form & Image. Let's set up App.js now. We need to import a bunch of things to get our program started (right now we'll import React and our child components, but we'll add to this as we go along!).
@@ -35,7 +35,7 @@ Does this kind of situation sound familiar? Hopefully it does, because it's exac
 To do so, we'll use the `useState()` function. If you've forgotten about that, check back at the first tutorial [here](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#usestate)!
 
 :collision: After you've given this a shot, this is what App.js should look like:
-```
+```js
 import React, { useState } from 'react'
 import Form from './Form'
 import Image from './Image'
@@ -55,7 +55,7 @@ Don't worry if you're seeing lots of errors on `localhost:3000`! We're currently
 Let's try to think of how to replicate this set up in Form & Image, so that we can render something on our screen with App.js! Remember: Form and Image are children of App, so they don't need to import each other, but they do need to import something for React to work, as well as contain some kind of function.
 
 :collision: After you've tried this on your own, check out what it should look like for Form.js:
-```
+```js
 import React, { useState } from 'react'
 
 export default function Form() {
@@ -67,7 +67,7 @@ export default function Form() {
 }
 ```
 ...and Image.js:
-```
+```js
 import React, { useState } from 'react'
 
 export default function Image() {
@@ -82,7 +82,7 @@ Now, you should see a blank page with the writing 'Form here!', because we're re
 
 ## API Call
 In order to make an API call on your own, you'll need to get your own individual API Key. How to do this will be found in the documentation of whatever API you're using, but for the sake of this tutorial, we've gotten an API key for you already! Right now, it's living in auth.js, so we'll need to import at the top of App.js like so:
-```
+```js
 import { API_KEY } from '../auth'
 ```
 We need those double dots because auth.js is not in the same folder as App.js, so we need to exit the folder once to find it.
@@ -96,7 +96,7 @@ In order to make this call, we need an API key to gain access to that data (like
 Now that we know a bit about APIs, let's think about how exactly to make an API call. For this tutorial, we're going to be using a library called `axios` to help us carry out this API call. Feel free to read about `axios` in their documentation [here](https://github.com/axios/axios), if you're curious about what this library can do!
 
 :collision: First, enter `npm install axios`. Next, import `axios` at the top of App.js:
-```
+```js
 import axios from 'axios'
 ```
 
@@ -108,7 +108,7 @@ This calls for an `async` function. `async` functions operate in a unique way: t
 
 :collision: Let's see what this syntax will look like in App.js's main function:
 
-```
+```js
 export default function App() {
   const[showForm, setShowForm] = useState(true)
 
@@ -142,7 +142,7 @@ The data we get from this API call is going to change every time the user makes 
 
 :collision: Let's put that in App.js, before our `async` function:
 
-```
+```js
 export default function App() {
   const[queryData, setData] = useState(null)
   const[showForm, setShowForm] = useState(true)
@@ -196,7 +196,7 @@ But wait—we have a few problems before we can start. For one, we don't have a 
 For another thing, `loadData()` isn't in our Form component yet for us to call in the submit button. To be able to call `loadData()`, we'll pass it as a prop from App.js to Form.js! If the word 'prop' doesn't sound particularly familiar to you, review the concept [here](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#props).
 
 :collision: First, go into App.js, and add `loadData()` as a prop where we're returning Form:
-```
+```js
 if (showForm) {
   return <Form onSearchSubmit={loadData} />
 } else {
@@ -204,7 +204,7 @@ if (showForm) {
 }
 ```
 :collision: Now, go into Form.js, and let's put all this (input box JSX, `onChange` function, `searchValue` state, submit button function) together!
-```
+```js
 import React, { useState } from 'react'
 import { Row, Col } from 'shards-react'
 import { rowStyle, formStyle, labelStyle, formButtonStyle } from './style'
@@ -237,7 +237,7 @@ In the submit button, when we call the `onSearchSubmit` function, we're also pas
 
 :collision: This isn't currently updated in App.js (remember, we hardcoded 'cat' for our `q` parameter in the API), so let's add `searchValue` in the parameters for `loadData()`, as well as in our `q` parameter in our API call, as well as add an `if` statement that handles the situation where there is, for some reason, no `searchValue`.
 
-```
+```js
 async function loadData(searchValue) {
   if (!searchValue) {
     alert("enter a search value!")
@@ -274,7 +274,7 @@ Currently, all we have in Image.js is a `div` containing some text. We're going 
 We'll be using the HTML `iframe` tag to display our GIF. The important part of `iframe` we'll be editing is its `src` tag, which we'll fill with the url of the GIF summoned by our API call. Look at the `queryData` log, and let's think about how to grab this url from `queryData`!
 
 :collision: First, at the bottom of App.js, we need to send `queryData` to Image.js so we can access its content there:
-```
+```js
 if (showForm) {
   return <Form onSearchSubmit={loadData} />
 } else {
@@ -284,18 +284,20 @@ if (showForm) {
 ```
 :collision: Now that we're passing Image.js `queryData` in the prop `src`, let's add that to the parameters of the `Image` function and return it on our page so we can see what the data looks like.
 
-```
+```js
 export default function Image({ src }) {
   return (
     <div>
       <h1>{JSON.stringify(src)}</h1>
     </div>
     )
+  }
 
 ```
 As you can see, within the `src` JSON object, we have a lot of information. Only one piece of it, though, is going to be necessary for rendering the GIF: `embed_url`. This key, as you might be able to guess, contains the GIF's url that can be embedded in an HTML tag, so that's what we want to be including in our `iframe` tag in Image.js!
 :collision: `embed_url`, as you might be able to guess, contains the GIF's url that can be embedded in an HTML tag, so that's what we want to be including in our `iframe` tag in Image.js! Let's make that happen:
-```
+
+```js
 import React, {useState} from 'react'
 import { Row, Col } from 'shards-react'
 import { gifStyle, rowStyle,imgButtonStyle } from './style'

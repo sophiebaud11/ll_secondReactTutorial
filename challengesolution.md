@@ -39,8 +39,8 @@ if (showForm) {
 }}
 
 ```
-```
-export default function Image({ src, refresh }) {
+```diff
++ export default function Image({ src, refresh }) {
   if (!src) {
     console.log("no gif url")
   } else {
@@ -51,7 +51,7 @@ export default function Image({ src, refresh }) {
             <button style={imgButtonStyle}>Back</button>
           </Row>
           <Row style={{display: 'flex', justifyContent: "center"}}>
-            <iframe style={gifStyle} src={src[counterValue].embed_url} title={src[counterValue].title} width={src[counterValue].images.original.width} />
+            <iframe style={gifStyle} src={src[0].embed_url} title={src[0].title} width={src[0].images.original.width} />
           </Row>
         </Col>
         </>
@@ -65,9 +65,9 @@ Now, we can move on to writing the `onClick()` function where we'll return `show
 To do so, we'll add `onClick()` as an attribute of the `button` tag, which will use the [fat arrow function](https://flaviocopes.com/javascript-arrow-functions/) syntax to update `refresh`.
 
 :collision: Give this a try. When you're done, it should look like this:
-```
+```diff
 <Row style={{display: 'flex', justifyContent: "center"}}>
-  <button style={imgButtonStyle} onClick={() => refresh(true)}>Back</button>
++  <button style={imgButtonStyle} onClick={() => refresh(true)}>Back</button>
 </Row>
 ```
 Test the button out—it should work now. Great job!
@@ -83,17 +83,17 @@ In order to do that, we need to create a button that triggers a function which i
 Hopefully this is ringing a bell: our counter value needs to be a state variable, and our button needs an `onClick()` function to initiate the increment counter.
 
 :collision: Let's start by adding the Shuffle button below our other divs (essentially the same way we made the Refresh Button!):
-```
+```diff
 <Col style={{marginTop: "20%"}}>
   <Row style={{display: 'flex', justifyContent: "center"}}>
     <button style={imgButtonStyle} onClick={() => refresh(true)}>Back</button>
   </Row>
   <Row style={{display: 'flex', justifyContent: "center"}}>
-    <iframe style={gifStyle} src={src[counterValue].embed_url} title={src[counterValue].title} width={src[counterValue].images.original.width} />
+    <iframe style={gifStyle} src={src[0].embed_url} title={src[0].title} width={src[0].images.original.width} />
   </Row>
-  <Row style={{display: 'flex', justifyContent: "center"}}>
-    <button style={imgButtonStyle} onClick={() => }>Shuffle!</button>
-  </Row>
++  <Row style={{display: 'flex', justifyContent: "center"}}>
++    <button style={imgButtonStyle} onClick={() => }>Shuffle!</button>
++  </Row>
 </Col>
 
 ```
@@ -131,23 +131,22 @@ Now that we've got this function written, we just have to call it inside our Shu
 That will have the same syntax as the Refresh button's `onClick()` attribute, but with a call of `incrementCounter(setCounter, counterValue)` instead of `refresh(true)`. Don't forget to update the indexes to `counterValue` instead of `[0]`!
 
 :collision: In the end, your Image.js file should look like this:
-```
+```diff
 import React, {useState} from 'react'
 import { Row, Col } from 'shards-react'
 import { gifStyle, imgButtonStyle } from './style'
 
 export default function Image({ src, refresh }) {
-  const [counterValue, setCounter] = useState(0)
-  console.log(src)
++  const [counterValue, setCounter] = useState(0)
 
-  function incrementCounter(setCounter, counterValue) {
-      if (counterValue === 19) {
-        setCounter(0)
-      }
-      else {
-        setCounter(counterValue + 1)
-      }
-  }
++  function incrementCounter(setCounter, counterValue) {
++      if (counterValue === 19) {
++        setCounter(0)
++      }
++      else {
++        setCounter(counterValue + 1)
++      }
++  }
 
   if (!src) {
     console.log("no gif url")
@@ -161,9 +160,9 @@ export default function Image({ src, refresh }) {
           <Row style={{display: 'flex', justifyContent: "center"}}>
             <iframe style={gifStyle} src={src[counterValue].embed_url} title={src[counterValue].title} width={src[counterValue].images.original.width} />
           </Row>
-          <Row style={{display: 'flex', justifyContent: "center"}}>
-            <button style={imgButtonStyle} onClick={() => incrementCounter(setCounter, counterValue) }>Shuffle!</button>
-          </Row>
++          <Row style={{display: 'flex', justifyContent: "center"}}>
++            <button style={imgButtonStyle} onClick={() => incrementCounter(setCounter, counterValue) }>Shuffle!</button>
++          </Row>
         </Col>
         </>
       )
