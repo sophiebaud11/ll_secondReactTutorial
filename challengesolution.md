@@ -4,7 +4,7 @@
 [What You'll Make](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#what-youll-make)\
 [Refresh Button](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#refresh-button)\
 [Shuffle Button](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#shuffle-button)\
-[Increment Function](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#increment-function)\
+[Increment Function](https://github.com/learninglab-dev/ll-first-reactLab/blob/master/walkthrough.md#increment-function)
 
 ### What You'll Make
 
